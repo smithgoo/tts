@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-12-24T11:22:36.259943",
+  "test_type": "advanced_browser_simulation",
+  "services": {
+    "TTSMaker-Advanced": {
+      "url": "https://ttsmaker.cn",
+      "status": "online",
+      "api_info": [],
+      "test_results": []
+    },
+    "LuYinZhuShou-Advanced": {
+      "url": "https://www.luyinzhushou.com/text2voice/",
+      "status": "online",
+      "api_info": [],
+      "test_results": []
+    },
+    "AI-Speaker-Advanced": {
+      "url": "https://ai-speaker.net",
+      "status": "online",
+      "api_info": [],
+      "test_results": []
+    }
+  },
+  "summary": {
+    "total_services": 3,
+    "online_services": 3,
+    "working_services": 0,
+    "total_test_files": 0,
+    "total_api_endpoints_found": 0
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "timestamp": "2025-12-24T11:21:41.857504",
+  "services": {
+    "TTSMaker": {
+      "url": "https://ttsmaker.cn",
+      "status": "online",
+      "voices": [
+        {
+          "id": "zh-cn",
+          "name": "中文 - Chinese 简体和繁体",
+          "type": "voice"
+        },
+        {
+          "id": "en-us",
+          "name": "English - 英语（仅支持转换英语，部分声音支持转多语言）",
+          "type": "voice"
+        },
+        {
+          "id": "ja-jp",
+          "name": "日本 - Japanese 日语",
+          "type": "voice"
+        },
+        {
+          "id": "ko-kr",
+          "name": "한국어 - Korean 韩语",
+          "type": "voice"
+        },
+        {
+          "id": "es-es",
+          "name": "Español - Spanish 西班牙语",
+          "type": "voice"
+        },
+        {
+          "id": "pt-br",
+          "name": "Portugues - Brazilian Portuguese 葡萄牙语",
+          "type": "voice"
+        },
+        {
+          "id": "de-de",
+          "name": "Deutsch - German 德语",
+          "type": "voice"
+        },
+        {
+          "id": "fr-fr",
+          "name": "Français - French 法语",
+          "type": "voice"
+        },
+        {
+          "id": "it-it",
+          "name": "Italiano - Italian 意大利语",
+          "type": "voice"
+        },
+        {
+          "id": "tr-tr",
+          "name": "Türk - Turkish 土耳其语",
+          "type": "voice"
+        }
+      ],
+      "api_endpoints": [],
+      "test_results": []
+    },
+    "LuYinZhuShou": {
+      "url": "https://www.luyinzhushou.com/text2voice/",
+      "status": "online",
+      "voices": [],
+      "api_endpoints": [],
+      "test_results": []
+    },
+    "AI-Speaker": {
+      "url": "https://ai-speaker.net",
+      "status": "online",
+      "voices": [],
+      "api_endpoints": [],
+      "test_results": []
+    }
+  },
+  "summary": {
+    "total_services": 3,
+    "online_services": 3,
+    "working_services": 0,
+    "total_test_files": 0
+  }
+}
