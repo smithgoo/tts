@@ -1,12 +1,50 @@
 # ttsRecord
 
+A Flask-based Text-to-Speech (TTS) application that provides a web interface to convert text to speech using various TTS services.
 
+## Getting Started
 
-## Getting started
+The application supports multiple TTS services including:
+- TTSMaker
+- AI Speaker
+- Edge TTS
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Quick Start (One-Click Setup)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+To run the application with a single command, use the provided setup script:
+
+```bash
+chmod +x run_project.sh
+./run_project.sh
+```
+
+The script will:
+1. Create and set up a virtual environment
+2. Install all required dependencies
+3. Start the Flask application on port 5001
+
+The application will be accessible at: http://localhost:5001
+
+## Manual Setup
+
+If you prefer to set up manually:
+
+1. Create a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   pip install edge-tts
+   ```
+
+3. Run the application:
+   ```bash
+   python app.py
+   ```
 
 ## Add your files
 

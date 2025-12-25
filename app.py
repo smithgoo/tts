@@ -27,25 +27,22 @@ TTS_SERVICES = {
     'ttsmaker': {
         'name': 'TTSMaker',
         'voices': [
-            # Female voices
-            {'id': 0, 'name': '女声1 - 标准女声'},
-            {'id': 1, 'name': '女声2 - 温柔女声'},
-            {'id': 2, 'name': '女声3 - 甜美女生'},
-            {'id': 3, 'name': '女声4 - 知性女声'},
-            # Male voices
-            {'id': 4, 'name': '男声1 - 标准男声'},
-            {'id': 5, 'name': '男声2 - 浑厚男声'},
-            {'id': 6, 'name': '男声3 - 阳光男声'},
-            {'id': 7, 'name': '男声4 - 磁性男声'},
-            # Child voices
-            {'id': 8, 'name': '童声1 - 小男孩'},
-            {'id': 9, 'name': '童声2 - 小女孩'},
-            # Special voices
-            {'id': 10, 'name': '方言 - 四川话'},
-            {'id': 11, 'name': '方言 - 广东话'},
-            {'id': 12, 'name': '方言 - 台湾腔'},
-            {'id': 13, 'name': '英文 - 美式女声'},
-            {'id': 14, 'name': '英文 - 英式男声'},
+            # Chinese voices - using actual TTSMaker IDs
+            {'id': 1504, 'name': '潇潇-热门推荐通用女声 - Female'},
+            {'id': 349, 'name': '阿佐-标准女声 - Female'},
+            {'id': 350, 'name': '云希-标准女声 - Female'},
+            {'id': 351, 'name': '云夏-标准女声 - Female'},
+            {'id': 352, 'name': '云健-新闻男声 - Male'},
+            {'id': 353, 'name': '云杰-新闻男声 - Male'},
+            {'id': 354, 'name': '云飞-新闻男声 - Male'},
+            {'id': 355, 'name': '云博-新闻男声 - Male'},
+            {'id': 356, 'name': '云瑞-新闻男声 - Male'},
+            {'id': 357, 'name': '云朵-儿童女声 - Female'},
+            {'id': 358, 'name': '云亮-儿童男声 - Male'},
+            {'id': 359, 'name': '云阳-专业男声 - Male'},
+            {'id': 360, 'name': '云云-儿童女声 - Female'},
+            {'id': 361, 'name': '云峰-新闻男声 - Male'},
+            {'id': 362, 'name': '云伟-新闻男声 - Male'},
         ],
         'speeds': [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
         'pitches': [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
@@ -85,57 +82,75 @@ class TTSConverter:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
 
-    def tts_maker(self, text, voice_id=0, speed=1.0, pitch=1.0, volume=1.0):
-        """Convert text to speech using edge-tts library"""
+    def tts_maker(self, text, voice_id=1504, speed=1.0, pitch=1.0, volume=1.0):
+        """Convert text to speech using the real TTSMaker API"""
         try:
-            import edge_tts
-            import asyncio
+            import requests
             import os
             from datetime import datetime
             
             # Create output directory if it doesn't exist
             os.makedirs(self.output_dir, exist_ok=True)
             
-            # Available Chinese voices in edge-tts
-            chinese_voices = [
-                'zh-CN-YunxiNeural',    # 男声
-                'zh-CN-XiaoxiaoNeural', # 女声
-                'zh-CN-YunjianNeural',  # 男声（带效果）
-                'zh-CN-XiaoyiNeural',   # 女声（带效果）
-                'zh-TW-HsiaoChenNeural', # 台湾女声
-                'zh-HK-HiuGaaiNeural'   # 香港女声
-            ]
+            # TTSMaker API endpoint
+            url = 'https://ttsmaker.cn/api/tts'
             
-            # Select voice based on voice_id
-            voice = chinese_voices[voice_id % len(chinese_voices)]
+            # Prepare the request data
+            data = {
+                'text': text,
+                'voice_id': voice_id,  # Use the actual voice ID from TTSMaker
+                'speed': speed,
+                'volume': volume,
+                'pitch': pitch,
+                'audio_format': 'mp3',
+                'audio_speed': speed,
+                'audio_volume': volume,
+                'audio_norm': '0',
+                'text_paragraph_pause_time': '0',
+                'background_music_volume': '0',
+                'background_music_speed': '1',
+                'speech_rate': speed,
+                'pitch_rate': pitch,
+            }
             
-            # Generate a unique filename with timestamp
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f'tts_output_{timestamp}.mp3'
-            filepath = os.path.join(self.output_dir, filename)
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': '*/*',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Referer': 'https://ttsmaker.cn/',
+                'Origin': 'https://ttsmaker.cn',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
             
-            async def generate_speech():
-                communicate = edge_tts.Communicate(
-                    text=text,
-                    voice=voice
-                )
-                await communicate.save(filepath)
+            # Make the API request
+            response = requests.post(url, data=data, headers=headers)
             
-            # Run the async function
-            asyncio.run(generate_speech())
-            
-            # Verify the file was created
-            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                return {
-                    'success': True, 
-                    'filename': filename, 
-                    'service': f'Edge TTS ({voice})'
-                }
+            if response.status_code == 200:
+                # Generate a unique filename with timestamp
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f'ttsmaker_{timestamp}.mp3'
+                filepath = os.path.join(self.output_dir, filename)
+                
+                # Save the audio response
+                with open(filepath, 'wb') as f:
+                    f.write(response.content)
+                
+                # Verify the file was created
+                if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+                    return {
+                        'success': True, 
+                        'filename': filename, 
+                        'service': f'TTSMaker (ID: {voice_id})'
+                    }
+                else:
+                    return {'success': False, 'error': 'Failed to save audio file'}
             else:
-                return {'success': False, 'error': 'Failed to generate audio file'}
+                return {'success': False, 'error': f'API request failed with status {response.status_code}'}
                 
         except Exception as e:
-            return {'success': False, 'error': f'Error with Edge TTS: {str(e)}'}
+            return {'success': False, 'error': f'Error with TTSMaker API: {str(e)}'}
 
     def luyinzhushou(self, text, voice_id=0, speed=1.0, pitch=1.0, volume=1.0):
         """Convert text to speech using edge-tts as fallback for luyinzhushou"""
@@ -150,6 +165,77 @@ class TTSConverter:
                 'success': False,
                 'error': f'Error with TTS service: {str(e)}'
             }
+
+    def ai_speaker(self, text, voice_id='zh-CN-XiaoxiaoNeural', speed='medium', pitch='medium', volume='medium'):
+        """Convert text to speech using AI Speaker service with edge-tts"""
+        try:
+            import edge_tts
+            import asyncio
+            import os
+            from datetime import datetime
+            
+            # Convert string parameters to appropriate values for edge_tts
+            # Map string values to numeric values for edge-tts
+            speed_map = {
+                'x-slow': '-50%', 'slow': '-25%', 'medium': '0%', 'fast': '25%', 'x-fast': '50%',
+                # Also handle numeric values that might be passed as strings
+                '0.5': '-50%', '0.75': '-25%', '1.0': '0%', '1.25': '25%', '1.5': '50%', '2.0': '100%'
+            }
+            pitch_map = {
+                'x-low': '-50%', 'low': '-25%', 'medium': '0%', 'high': '25%', 'x-high': '50%',
+                # Also handle numeric values that might be passed as strings
+                '0.5': '-50%', '0.75': '-25%', '1.0': '0%', '1.25': '25%', '1.5': '50%', '2.0': '100%'
+            }
+            volume_map = {
+                'silent': '0%', 'x-soft': '25%', 'soft': '50%', 'medium': '75%', 'loud': '90%', 'x-loud': '100%',
+                # Also handle numeric values that might be passed as strings
+                '0.5': '50%', '0.75': '75%', '1.0': '100%', '1.25': '125%', '1.5': '150%', '2.0': '200%'
+            }
+            
+            # Get the mapped values or default to medium if not found
+            mapped_speed = speed_map.get(str(speed), '0%')
+            mapped_pitch = pitch_map.get(str(pitch), '0%')
+            mapped_volume = volume_map.get(str(volume), '100%')
+            
+            # Create output directory if it doesn't exist
+            os.makedirs(self.output_dir, exist_ok=True)
+            
+            # Generate a unique filename with timestamp
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f'ai_speaker_{timestamp}.mp3'
+            filepath = os.path.join(self.output_dir, filename)
+            
+            async def generate_speech():
+                # Create SSML (Speech Synthesis Markup Language) to include voice parameters
+                ssml_text = f"""<speak>
+                    <voice name="{voice_id}">
+                        <prosody rate="{mapped_speed}" pitch="{mapped_pitch}" volume="{mapped_volume}">
+                            {text}
+                        </prosody>
+                    </voice>
+                </speak>"""
+                
+                communicate = edge_tts.Communicate(
+                    text=ssml_text,
+                    voice=voice_id
+                )
+                await communicate.save(filepath)
+            
+            # Run the async function
+            asyncio.run(generate_speech())
+            
+            # Verify the file was created
+            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+                return {
+                    'success': True, 
+                    'filename': filename, 
+                    'service': f'AI Speaker ({voice_id})'
+                }
+            else:
+                return {'success': False, 'error': 'Failed to generate audio file'}
+                
+        except Exception as e:
+            return {'success': False, 'error': f'Error with AI Speaker: {str(e)}'}
 
     def google_tts(self, text, voice_id='zh-CN-Wavenet-A', speed=1.0, pitch=1.0, volume=1.0):
         """Convert text to speech using edge-tts as fallback for Google TTS"""
@@ -191,8 +277,8 @@ def convert_text():
             speed = data.get('speed', 'medium')
             pitch = data.get('pitch', 'medium')
             volume = data.get('volume', 'medium')
-            # Use tts_maker as a fallback for now
-            result = tts_converter.tts_maker(text, 0, 1.0, 1.0, 1.0)
+            # Use ai_speaker method for AI Speaker service
+            result = tts_converter.ai_speaker(text, voice_id, speed, pitch, volume)
         else:
             return jsonify({'success': False, 'error': '不支持的TTS服务'}), 400
             

@@ -423,8 +423,8 @@
         const downloadBtn = document.getElementById('download-btn');
         const errorDiv = document.getElementById('error');
         const errorMessage = document.getElementById('error-message');
-        const serviceTag = document.getElementById('service-tag');
-        const tabs = document.querySelectorAll('.tab');
+        const serviceTag = document.getElementById('service-tag'); // Optional element
+        // Note: There is no element with class 'tab', using tabItems instead
 
         // Service configuration is passed from Flask template
         let currentService = 'ttsmaker'; // Default service
@@ -454,24 +454,13 @@
                 // Update current service
                 currentService = tab.dataset.service;
                 
-                // Update service tag
-                serviceTag.textContent = tab.textContent.trim();
-                serviceTag.textContent = tab.textContent.trim();
+                // Update service tag if element exists
+                if (serviceTag) {
+                    serviceTag.textContent = tab.textContent.replace(/\s+<i[^>]*>.*?<\/i>\s*/, '').trim();
+                }
                 
-                // Show/hide voice options
-                const voices = voiceSelect.querySelectorAll('option');
-                voices.forEach(voice => {
-                    if (voice.dataset.service === currentService) {
-                        voice.style.display = 'block';
-                        if (voice.selected) voice.selected = false;
-                    } else {
-                        voice.style.display = 'none';
-                    }
-                });
-                
-                // Select first voice of the service
-                const firstVoice = voiceSelect.querySelector(`[data-service="${currentService}"]`);
-                if (firstVoice) firstVoice.selected = true;
+                // Filter voice options for current service
+                filterVoiceOptions(currentService);
                 
                 // Update slider settings
                 updateSliderSettings(currentService);
@@ -575,13 +564,26 @@
             
             try {
                 // Prepare request data
+                const serviceConfig = {
+                    'ttsmaker': {
+                        speed: parseFloat(speedInput.value),
+                        pitch: parseFloat(pitchInput.value),
+                        volume: parseFloat(volumeInput.value)
+                    },
+                    'ai_speaker': {
+                        speed: speedInput.value, // String values for AI Speaker
+                        pitch: pitchInput.value, // String values for AI Speaker
+                        volume: volumeInput.value // String values for AI Speaker
+                    }
+                };
+                
                 const requestData = {
                     text,
                     service: currentService,
                     voice_id: voiceSelect.value,
-                    speed: parseFloat(speedInput.value),
-                    pitch: parseFloat(pitchInput.value),
-                    volume: parseFloat(volumeInput.value)
+                    speed: serviceConfig[currentService].speed,
+                    pitch: serviceConfig[currentService].pitch,
+                    volume: serviceConfig[currentService].volume
                 };
                 
                 // Send request to backend
@@ -627,8 +629,55 @@
             errorDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Filter voice options based on current service
+        function filterVoiceOptions(service) {
+            const allOptions = voiceSelect.querySelectorAll('option');
+            allOptions.forEach(option => {
+                if (option.dataset.service === service) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+            
+            // Select the first visible option
+            const firstVisible = Array.from(allOptions).find(option => option.style.display !== 'none');
+            if (firstVisible) {
+                firstVisible.selected = true;
+            }
+        }
+        
+        // Store original options for each service
+        const originalOptions = {
+            'ttsmaker': [],
+            'ai_speaker': []
+        };
+        
+        // Populate original options from the DOM after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const allOptions = document.querySelectorAll('#voice option');
+            allOptions.forEach(option => {
+                if (option.dataset.service === 'ttsmaker') {
+                    originalOptions['ttsmaker'].push({
+                        value: option.value,
+                        text: option.textContent,
+                        service: option.dataset.service
+                    });
+                } else if (option.dataset.service === 'ai_speaker') {
+                    originalOptions['ai_speaker'].push({
+                        value: option.value,
+                        text: option.textContent,
+                        service: option.dataset.service
+                    });
+                }
+            });
+            
+            // Initialize voice options for default service
+            filterVoiceOptions(currentService);
+        });
+        
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function() {
             // Set default active tab
             const defaultTab = document.querySelector('.tab-item[data-service="ttsmaker"]');
             if (defaultTab) {
